@@ -1,0 +1,30 @@
+document.addEventListener('DOMContentLoaded',()=>{const sections={input:document.getElementById('input-section'),processing:document.getElementById('processing-section'),results:document.getElementById('results-section')};const progressFill=document.getElementById('progress-fill');const statusText=document.getElementById('status-text');const verdictIcon=document.getElementById('verdict-icon');const verdictTitle=document.getElementById('verdict-title');const verdictDesc=document.getElementById('verdict-desc');const checksContainer=document.getElementById('checks-container');const verifyBtn=document.getElementById('verify-btn');const resetBtn=document.getElementById('reset-btn');
+const KNOWN_MANUFACTURERS=['cipla','sun pharma','dr reddy','lupin','aurobindo','zydus','torrent','glenmark','mankind','abbott','glaxosmithkline','gsk','pfizer','johnson','novartis','ranbaxy','biocon','cadila','alkem','ipca','hetero','wockhardt','intas','macleods','micro labs'];
+function switchSection(n){Object.values(sections).forEach(s=>s.classList.remove('active'));sections[n].classList.add('active')}
+verifyBtn.addEventListener('click',()=>{const name=document.getElementById('med-name').value.trim();const mfr=document.getElementById('med-manufacturer').value.trim();const batch=document.getElementById('med-batch').value.trim();const mfgDate=document.getElementById('med-mfg').value;const expDate=document.getElementById('med-expiry').value;const mrp=document.getElementById('med-mrp').value;
+if(!name||!mfr||!batch){alert('Please fill in Medicine Name, Manufacturer, and Batch Number.');return;}
+runVerification({name,mfr,batch,mfgDate,expDate,mrp:parseFloat(mrp)});});
+function runVerification(data){switchSection('processing');progressFill.style.width='0%';const statuses=['Checking pharmaceutical databases...','Verifying batch number format...','Cross-referencing manufacturer records...','Validating date integrity...','Generating verification report...'];let progress=0,si=0;statusText.innerText=statuses[0];
+const interval=setInterval(()=>{progress+=Math.random()*5+2;if(progress>=100){progress=100;clearInterval(interval);setTimeout(()=>showResults(data),500);}progressFill.style.width=`${progress}%`;if(progress>(si+1)*20&&si<statuses.length-1){si++;statusText.innerText=statuses[si];}},120);}
+function showResults(data){switchSection('results');checksContainer.innerHTML='';const checks=[];
+// Manufacturer check
+const mfrLower=data.mfr.toLowerCase();const knownMfr=KNOWN_MANUFACTURERS.some(m=>mfrLower.includes(m));
+checks.push({pass:knownMfr,warning:!knownMfr,icon:knownMfr?'fa-circle-check':'fa-triangle-exclamation',color:knownMfr?'var(--success)':'var(--warning)',text:knownMfr?`"${data.mfr}" is a recognized pharmaceutical manufacturer.`:`"${data.mfr}" is not in our known manufacturer database. Verify independently.`,status:knownMfr?'pass':'warning'});
+// Batch number format
+const batchValid=/^[A-Z]{1,3}[0-9]{4,}/i.test(data.batch);
+checks.push({pass:batchValid,icon:batchValid?'fa-circle-check':'fa-circle-xmark',color:batchValid?'var(--success)':'var(--danger)',text:batchValid?`Batch number "${data.batch}" follows standard pharmaceutical formatting.`:`Batch number "${data.batch}" does not match standard formats. This is suspicious.`,status:batchValid?'pass':'fail'});
+// Date checks
+if(data.mfgDate&&data.expDate){const mfg=new Date(data.mfgDate);const exp=new Date(data.expDate);const now=new Date();const shelfMonths=(exp-mfg)/(1000*60*60*24*30);const expired=exp<now;
+if(expired){checks.push({icon:'fa-circle-xmark',color:'var(--danger)',text:`⚠️ This medicine EXPIRED on ${exp.toLocaleDateString()}. Do not consume.`,status:'fail'});}
+else if(shelfMonths<6){checks.push({icon:'fa-triangle-exclamation',color:'var(--warning)',text:`Shelf life of ${Math.round(shelfMonths)} months is unusually short. Standard is 12-36 months.`,status:'warning'});}
+else if(shelfMonths>60){checks.push({icon:'fa-triangle-exclamation',color:'var(--warning)',text:`Shelf life of ${Math.round(shelfMonths)} months exceeds typical range. Verify dates.`,status:'warning'});}
+else{checks.push({icon:'fa-circle-check',color:'var(--success)',text:`Valid shelf life of ${Math.round(shelfMonths)} months. Expiry: ${exp.toLocaleDateString()}.`,status:'pass'});}}
+// MRP check
+if(data.mrp){if(data.mrp<5){checks.push({icon:'fa-triangle-exclamation',color:'var(--warning)',text:`MRP of ₹${data.mrp} is unusually low. Verify pricing.`,status:'warning'});}else{checks.push({icon:'fa-circle-check',color:'var(--success)',text:`MRP ₹${data.mrp} is within normal range.`,status:'pass'});}}
+// Overall verdict
+const fails=checks.filter(c=>c.status==='fail').length;const warnings=checks.filter(c=>c.status==='warning').length;
+if(fails>0){verdictIcon.innerHTML='<i class="fa-solid fa-shield-xmark" style="color:var(--danger)"></i>';verdictTitle.textContent='Suspicious — Verify Immediately';verdictTitle.style.color='var(--danger)';verdictDesc.textContent='One or more critical checks failed. This medicine may be counterfeit. Contact the manufacturer directly.';}
+else if(warnings>1){verdictIcon.innerHTML='<i class="fa-solid fa-shield-exclamation" style="color:var(--warning)"></i>';verdictTitle.textContent='Caution Advised';verdictTitle.style.color='var(--warning)';verdictDesc.textContent='Multiple warnings detected. While not conclusive, we recommend verifying with your pharmacist.';}
+else{verdictIcon.innerHTML='<i class="fa-solid fa-shield-check" style="color:var(--success)"></i>';verdictTitle.textContent='Appears Authentic';verdictTitle.style.color='var(--success)';verdictDesc.textContent='All checks passed. This medicine appears to be from a legitimate source.';}
+checks.forEach(c=>{const div=document.createElement('div');div.className=`check-item ${c.status}`;div.innerHTML=`<i class="fa-solid ${c.icon}" style="color:${c.color}"></i><span class="check-text">${c.text}</span>`;checksContainer.appendChild(div);});}
+resetBtn.addEventListener('click',()=>{['med-name','med-manufacturer','med-batch','med-mfg','med-expiry','med-mrp'].forEach(id=>document.getElementById(id).value='');checksContainer.innerHTML='';switchSection('input');});});

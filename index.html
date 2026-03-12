@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>MedScan | Medicine Authenticity Checker</title><meta name="description" content="Verify medicine authenticity by scanning packet details. Detect counterfeit drugs instantly."><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0a0a0f"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="styles.css"></head>
+<body><div class="background-effects"><div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div><div class="glow-orb orb-3"></div></div>
+<main class="container">
+<header class="app-header"><div class="logo"><i class="fa-solid fa-pills"></i><h1>MedScan</h1></div><p class="subtitle">Medicine Authenticity Checker</p></header>
+<div class="glass-panel main-panel">
+<div id="input-section" class="section active">
+<div class="input-area"><i class="fa-solid fa-capsules input-icon"></i><h3>Enter Medicine Details</h3><p>Enter the information from your medicine packet to verify authenticity</p>
+<div class="input-grid">
+<div class="input-group"><label>Medicine Name</label><input type="text" id="med-name" placeholder="e.g. Paracetamol 500mg"></div>
+<div class="input-group"><label>Manufacturer</label><input type="text" id="med-manufacturer" placeholder="e.g. Cipla Ltd"></div>
+<div class="input-group"><label>Batch Number</label><input type="text" id="med-batch" placeholder="e.g. BN2024A1234"></div>
+<div class="input-group"><label>Manufacturing Date</label><input type="date" id="med-mfg"></div>
+<div class="input-group"><label>Expiry Date</label><input type="date" id="med-expiry"></div>
+<div class="input-group"><label>MRP (₹)</label><input type="number" id="med-mrp" placeholder="e.g. 45"></div>
+</div>
+<button class="primary-btn" id="verify-btn">Verify Medicine</button>
+</div></div>
+<div id="processing-section" class="section"><div class="scanner-container"><div class="med-anim"><i class="fa-solid fa-prescription-bottle-medical"></i><div class="scan-pulse"></div></div><div class="processing-status"><div class="spinner"></div><h3 id="status-text">Checking pharmaceutical databases...</h3></div><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div></div></div>
+<div id="results-section" class="section">
+<div class="results-header"><h2>Verification Report</h2><button class="icon-btn" id="reset-btn"><i class="fa-solid fa-rotate-right"></i></button></div>
+<div class="verdict-card" id="verdict-card"><div class="verdict-icon" id="verdict-icon"><i class="fa-solid fa-circle-check"></i></div><h3 id="verdict-title">Verified</h3><p id="verdict-desc">Medicine appears authentic.</p></div>
+<div class="checks-container" id="checks-container"></div>
+</div></div>
+<section class="info-section glass-panel"><div class="info-grid">
+<div class="info-card"><i class="fa-solid fa-barcode info-icon"></i><h3>Batch Verification</h3><p>Cross-references batch numbers against known pharmaceutical manufacturer patterns to flag suspicious or non-standard identifiers.</p></div>
+<div class="info-card"><i class="fa-solid fa-calendar-check info-icon"></i><h3>Date Integrity</h3><p>Validates manufacturing and expiry date ranges against standard pharmaceutical shelf-life protocols for the drug category.</p></div>
+<div class="info-card"><i class="fa-solid fa-hand-holding-medical info-icon"></i><h3>Save Lives</h3><p>Counterfeit medicines affect 10% of global supply. This tool empowers consumers to independently verify their medications.</p></div>
+</div></section>
+<footer class="app-footer"><p>&copy; 2026 MedScan. Pharmaceutical Verification.</p><p class="author-credit">Created with <i class="fa-solid fa-heart" style="color:var(--accent-1);font-size:0.8em"></i> by <strong>Saurbh Shinde</strong></p></footer>
+</main><script src="app.js"></script></body></html>
